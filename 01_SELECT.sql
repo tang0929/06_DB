@@ -97,7 +97,9 @@ SELECT SYSDATE - 1 , SYSDATE , SYSDATE + 1, SYSDATE + 2 FROM DUAL;
 
 
 -- 현재 시간, 한 시간 후, 1분 후, 10초 후 조회
-SELECT SYSDATE, SYSDATE + 1/24, SYSDATE + 1/24/60, SYSDATE + 1/24/60/60 * 10 FROM DUAL;
+SELECT SYSDATE "현재 시간", SYSDATE + 1/24 "1시간 후", SYSDATE + 1/24/60 "1분 후", SYSDATE + 1/24/60/60 * 10 "10초 후" FROM DUAL;
+
+
 
 -- 1 == 1일이므로 1일이 24시간임을 고려해서 1/24를 하게 되면 1시간을 조절한 값이 출력된다.
 
@@ -425,13 +427,95 @@ SELECT EMP_ID 사번, EMP_NAME 이름, EMAIL 이메일 FROM EMPLOYEE WHERE EMAIL
 
 
 
+------------------------------------------------------------
+
+/* **** ORDER BY 절 ****
+ * 
+ * - SELECT문의 조회 결과(RESULT SET)를 정렬할 때 사용하는 구문
+ * 
+ * - *** SELECT구문에서 제일 마지막에 해석된다! ***
+ * 
+ * [작성법]
+ * 3: SELECT 컬럼명 AS 별칭, 컬럼명, 컬럼명, ...
+ * 1: FROM 테이블명
+ * 2: WHERE 조건식
+ * 4: ORDER BY 컬럼명 | 별칭 | 컬럼 순서 [오름/내림 차순] 
+ * 	        [NULLS FIRST | LAST]
+ * 
+ * */
 
 
 
+-- EMPLOYEE 테이블에서 모든 사원의 이름, 급여 조회, 급여 오름차순 정렬
+SELECT EMP_NAME 이름, SALARY 급여 FROM EMPLOYEE ORDER BY SALARY ASC;
+-- ASC(ascending) : 오름차순 / DESC(decreasing) : 내림차순
+
+
+-- EMPLOYEE 테이블에서 모든 사원의 이름, 급여 조회, 급여 내림차순 정렬
+SELECT EMP_NAME 이름, SALARY 급여 FROM EMPLOYEE ORDER BY SALARY DESC; 
 
 
 
+-- EMPLOYEE 테이블에서 부서코드가 'D5','D6','D9'인 사원의 사번, 이름, 부서코드 조회, 부서코드 오름차순 정렬
+SELECT EMP_NAME 이름, DEPT_CODE 부서코드 FROM EMPLOYEE WHERE DEPT_CODE IN ( 'D5','D6','D9') ORDER BY DEPT_CODE ASC;
+-- ASC 는 기본값이므로 생략 가능
 
 
 
+/* 컬럼 순서를 이용해 정렳하기 */
+-- EMPLOYEE 테이블에서 급여가 300만 이상, 600만 이하인 사원의 사번, 이름, 급여를 이름 내림차순으로 조회       
+SELECT EMP_ID 사번, EMP_NAME 이름, SALARY 급 FROM EMPLOYEE WHERE SALARY BETWEEN 3000000 AND 60000000 ORDER BY 2 DESC;
 
+
+
+/* ORDER BY에 수식 적용*/
+ -- EMPLOYEE 테이블에서 이름, 연봉을 내림차순으로 조회
+SELECT EMP_NAME 이름, SALARY * 12 연봉 FROM EMPLOYEE ORDER BY SALARY * 12 DESC;
+-- 정렬시 SELECT에 작성된 칼럼을 그대로 따라 적는 경우가 많음
+
+
+
+/* ORDER BY에 별칭 사용하기 
+ * SELECT절 해석 이후 ORDER BY절이 해석되기 때문에 SELECT 절에서 해석된 별칭을 ORDER BY절에서 사용 가능 */
+ -- EMPLOYEE 테이블에서 이름, 연봉을 내림차순으로 조회 
+SELECT EMP_NAME 이름, SALARY * 12 연봉 FROM EMPLOYEE ORDER BY 연봉 DESC;
+
+
+
+-- WHERE절은 별칭 사용 불가 확인!
+SELECT EMP_NAME, DEPT_CODE 부서코드 FROM EMPLOYEE WHERE 부서코드 = 'D6';
+-- ORA-00904 에ㅐ : 부서코드 칼럼이 존재하지 않음
+
+
+
+/* NULLS FIRST / LAST 옵션 적용하기 */
+
+-- 모든 사원의 이름, 전화번호 조회
+
+-- 오름차순 + NULLS FIRST (NULL인 경우 제일 위에)
+SELECT EMP_NAME, PHONE FROM EMPLOYEE
+ORDER BY PHONE NULLS FIRST; 
+
+-- 내림차순 + NULLS FIRST (NULL인 경우 제일 아래에)
+SELECT EMP_NAME, PHONE FROM EMPLOYEE
+ORDER BY PHONE NULLS LAST; 
+
+-- 내림차순 + NULLS FIRST (NULL인 경우 제일 위에)
+SELECT EMP_NAME, PHONE FROM EMPLOYEE
+ORDER BY PHONE DESC NULLS FIRST;  -- 정렬 기준 -> NULL 위치 순서대로 해석
+
+
+/* 정렬 중첩 
+ * 
+ * 먼저 작성된 정렬 기준을 깨지 않고, 다음 작성된 정렬도 제공*/
+-- EMPLOYEE 테이블에서 이름, 부서코드, 급여를 부서코드 오름차순, 급여 내림차순으로 조회
+SELECT EMP_NAME 이름, DEPT_CODE 부서코드, SALARY 급여 FROM EMPLOYEE ORDER BY DEPT_CODE ASC, SALARY DESC;
+
+
+
+-- EMPLOYEE 테이블에서 이름, 부서코드, 직급코드(JOB_CODE)를 부서코드 오름차순, 직급 내림차순, 이름 오름차순으로 조회
+SELECT EMP_NAME 이름, DEPT_CODE 부서코드, JOB_CODE 직급코드 FROM EMPLOYEE ORDER BY DEPT_CODE ASC,JOB_CODE DESC, 이름 ASC;
+
+
+
+ 
