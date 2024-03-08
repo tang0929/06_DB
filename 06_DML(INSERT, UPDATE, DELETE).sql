@@ -260,6 +260,9 @@ VALUES (999, '곽두원', '561016-1234567', 'kwack_dw@kh.or.kr',
         '01011112222', 'D9', 'J4', 'S1', 9000000, 0.5, NULL,
         SYSDATE, NULL, DEFAULT);
        
+       
+       
+       
 SELECT * FROM EMP_M01; 
 SELECT * FROM EMP_M02;
 
